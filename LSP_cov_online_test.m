@@ -1,8 +1,8 @@
 % Real time recognition test using LSP cov matrix similarity
 
 %%
-load('LSP_cov.mat');
-nSp = length(names);
+load('LSP_features.mat');
+nSp = length(features);
 N_max = 100;
 
 bs = 11;
@@ -13,11 +13,11 @@ piHat = zeros(nSp, 1);
 
 figure(1)
 plt = bar(piHat);
-set(gca, 'xtick', 1:length(names), 'xticklabel', names);
+set(gca, 'xtick', 1:nSp, 'xticklabel', {features.name});
 
 ylim([0 1])
 xlabel('Speaker')
-ylabel('Probability (Monotonously transformed)')
+ylabel('Similarity')
 
 plt.YDataSource = 'piHat';
 
@@ -46,7 +46,7 @@ while 1
         m_v = m_v + lsp./(N+1);
 
         for i = 1:nSp
-            piHat(i) = 1./(1 + norm(COV_M(:,:,i) - cov_m, 'fro'));
+            piHat(i) = 1./(1 + norm(features(i).covm - cov_m, 'fro'));
         end
 
         if N <= N_max

@@ -9,16 +9,13 @@ n_10ms = fs*0.010;
 E_threshold = 0.0100;
 
 files = dir('samples\*.m4a')';
-names = {files.name};
 
-M_V   = zeros([p,length(files)]);
-COV_M = zeros([p,p,length(files)]);
+features = struct('name',{},'covm',{},'mean',{});
 
-i = 1;
 for file = files
 
-    [~,tmp,~] = fileparts(file.name);
-    disp(['  Now processing: ' tmp])
+    [~,name,~] = fileparts(file.name);
+    disp(['  Now processing: ' name])
     [y,~] = audioread([file.folder '\' file.name]);
     is_voiced = zeros(size(y));
 
@@ -45,14 +42,16 @@ for file = files
 
         end
 
-        COV_M(:,:,i) = cov_m;
-        M_V  (:,i)   = m_v;
-
         n_cnt = n_cnt + 1;
 
     end
-
+%{
     figure; plot(y); hold on; plot(is_voiced); hold off;
+%}
+    feature.name = name;
+    feature.covm = cov_m;
+    feature.mean = m_v;
+    features(end+1) = feature;
 
     i = i + 1;
 
@@ -61,5 +60,5 @@ end
 disp('Feature extraction complete')
 
 %%
-save('LSP_cov', 'names', 'p', 'fs', 'COV_M', 'n_10ms', 'E_threshold');
+save('LSP_features', 'features', 'p', 'fs', 'n_10ms', 'E_threshold');
 clear
