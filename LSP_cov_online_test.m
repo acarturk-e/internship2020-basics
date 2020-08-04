@@ -5,7 +5,7 @@ load('LSP_features.mat');
 nSp = length(features);
 N_max = 100;
 
-bs = 11;
+BufferSize = 11;
 deviceReader = audioDeviceReader(fs, n_10ms);
 setup(deviceReader);
 
@@ -22,9 +22,9 @@ ylabel('Similarity')
 plt.YDataSource = 'piHat';
 
 %%
-y_buff = zeros(bs*n_10ms,1);
-for i = 1:bs-1
-    y_buff = [y_buff(n_10ms+1:bs*n_10ms,1); deviceReader()];
+y_buff = zeros(BufferSize*n_10ms,1);
+for i = 1:BufferSize-1
+    y_buff = [y_buff(n_10ms+1:BufferSize*n_10ms,1); deviceReader()];
 end
 
 m_v   = zeros([p,1]);
@@ -33,9 +33,10 @@ N     = 1;
 
 while 1
 
-    y_buff = [y_buff(n_10ms+1:bs*n_10ms,1); deviceReader()];
+    pause(0.001);
+    y_buff = [y_buff(n_10ms+1:BufferSize*n_10ms,1); deviceReader()];
     
-    E = sum(y_buff.^2)/(bs*n_10ms);
+    E = sum(y_buff.^2)/(BufferSize*n_10ms);
 
     if E >= E_threshold
 
